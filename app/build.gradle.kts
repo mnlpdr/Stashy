@@ -70,6 +70,7 @@ dependencies {
     implementation(libs.androidx.activity.compose.v191)
     implementation(libs.retrofit)
     implementation(libs.converter.gson)
+    implementation(libs.androidx.core.splashscreen)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -95,6 +96,7 @@ dependencies {
     implementation(libs.androidx.room.ktx.v251)
     implementation(libs.google.dagger.compiler)
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.4")
+    implementation("io.coil-kt:coil-compose:2.0.0")
 
 
 }

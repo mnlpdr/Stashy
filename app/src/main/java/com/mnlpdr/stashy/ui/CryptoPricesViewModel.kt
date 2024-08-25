@@ -3,6 +3,7 @@ package com.mnlpdr.stashy.ui
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mnlpdr.stashy.data.CoinCapApiService
+import com.mnlpdr.stashy.data.CoinGeckoApiService
 import com.mnlpdr.stashy.data.CryptoPrice
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -45,6 +46,7 @@ class CryptoPricesViewModel(apiKey: String) : ViewModel() {
     val isRefreshing: StateFlow<Boolean> = _isRefreshing
 
     private val apiService = CoinCapApiService.create(apiKey)
+    private val geckoApiService = CoinGeckoApiService.create()
 
     init {
         fetchCryptoPricesFromAPI()
@@ -56,15 +58,27 @@ class CryptoPricesViewModel(apiKey: String) : ViewModel() {
             try {
                 val response = apiService.getCryptoPrices()
                 val cryptoPrices = response.data.map { data ->
+                    // Cria o objeto CryptoPrice sem o ícone inicialmente
                     CryptoPrice(
                         coinTicker = data.symbol.uppercase(),
                         cryptoName = data.name,
                         quantity = 0.0,
                         currentPrice = data.priceUsd.toDouble(),
-
+                        iconUrl = null  // O ícone será preenchido posteriormente
                     )
                 }
-                _prices.value = cryptoPrices
+
+                // Agora buscamos os ícones de cada cripto
+                val updatedCryptoPrices = cryptoPrices.map { crypto ->
+                    try {
+                        val geckoResponse = geckoApiService.getCoinDetails(crypto.cryptoName.lowercase())
+                        crypto.copy(iconUrl = geckoResponse.image.large)  // Atualiza com o ícone
+                    } catch (e: Exception) {
+                        crypto // Se falhar, retorna o objeto sem o ícone
+                    }
+                }
+
+                _prices.value = updatedCryptoPrices
             } catch (e: Exception) {
                 // Aqui você pode lidar com o erro, como exibir uma mensagem de erro
             } finally {

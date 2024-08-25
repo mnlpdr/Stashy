@@ -1,5 +1,6 @@
 package com.mnlpdr.stashy.ui
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.ExperimentalMaterialApi
@@ -20,8 +21,13 @@ import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.PullRefreshState
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
-import com.mnlpdr.stashy.ui.CryptoPricesViewModel
+import androidx.compose.ui.platform.LocalContext
+import coil.compose.rememberAsyncImagePainter
+import coil.compose.rememberImagePainter
+import coil.imageLoader
+import coil.request.ImageRequest
 import kotlinx.coroutines.launch
+import com.mnlpdr.stashy.R
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -37,6 +43,10 @@ fun CryptoPricesScreen(viewModel: CryptoPricesViewModel) {
             }
         }
     )
+
+    // Limpar o cache manualmente
+    val context = LocalContext.current
+    context.imageLoader.memoryCache?.clear()
 
     Surface(color = MaterialTheme.colorScheme.background) {
         Box(
@@ -78,19 +88,33 @@ fun CryptoPriceItem(price: CryptoPrice) {
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically // Isso garante que o ícone e o texto fiquem alinhados verticalmente
         ) {
-            Text(
-                text = price.coinTicker,
-                style = MaterialTheme.typography.titleLarge,
-                color = MaterialTheme.colorScheme.onSurface
+            val iconUrl = price.iconUrl
+            Image(
+                painter = rememberAsyncImagePainter(
+                    ImageRequest.Builder(LocalContext.current).data(data = iconUrl)
+                        .apply<ImageRequest.Builder>(block = fun ImageRequest.Builder.() {
+                            error(R.drawable.crypto_placeholder) // Ícone de placeholder em caso de erro
+                        }).build()
+                ),
+                contentDescription = "${price.cryptoName} icon",
+                modifier = Modifier.size(40.dp)
             )
-            Spacer(modifier = Modifier.width(16.dp))
-            Text(
-                text = "${price.currentPrice} USD",
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurface
-            )
+            Spacer(modifier = Modifier.width(16.dp)) // Espaçamento entre o ícone e o texto
+            Column {
+                Text(
+                    text = price.coinTicker,
+                    style = MaterialTheme.typography.titleLarge,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+                Text(
+                    text = "${price.currentPrice} USD",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+            }
         }
     }
 }
+
