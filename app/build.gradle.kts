@@ -97,6 +97,8 @@ dependencies {
     implementation(libs.google.dagger.compiler)
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.4")
     implementation("io.coil-kt:coil-compose:2.0.0")
+    implementation("androidx.biometric:biometric:1.2.0-alpha04")
+
 
 
 }

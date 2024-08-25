@@ -12,13 +12,14 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
 import com.mnlpdr.stashy.R
 
 @Composable
-fun HomeScreen(userName: String, totalBalance: Double, balanceChange: Double, balanceChangePercent: Double, bags: List<Bag>) {
+fun HomeScreen(userName: String, totalBalance: Double, balanceChange: Double, balanceChangePercent: Double, bags: List<Bag>, navController: NavHostController) {
     Scaffold(
         bottomBar = {
-            BottomNavigationBar()
+            BottomNavigationBar(navController = navController)
         }
     ) { paddingValues ->
         Column(
@@ -136,7 +137,7 @@ fun BagCard(bag: Bag) {
 }
 
 @Composable
-fun BottomNavigationBar() {
+fun BottomNavigationBar(navController: NavHostController) {
     BottomAppBar(
         containerColor = MaterialTheme.colorScheme.primary,
         contentColor = Color.White
@@ -148,24 +149,41 @@ fun BottomNavigationBar() {
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            IconButton(onClick = { /* TODO: Navegar para Home */ }) {
-                Icon(painter = painterResource(id = R.drawable.round_home_24), contentDescription = "Home")
+            BottomNavItem(iconId = R.drawable.round_home_24, label = "Home") {
+                // Navegação para Home
             }
-            IconButton(onClick = { /* TODO: Navegar para Market */ }) {
-                Icon(painter = painterResource(id = R.drawable.round_auto_graph_24), contentDescription = "Market")
+            BottomNavItem(iconId = R.drawable.round_auto_graph_24, label = "Market") {
+                navController.navigate("top10")
             }
-            IconButton(onClick = { /* TODO: Navegar para Bags */ }) {
-                Icon(painter = painterResource(id = R.drawable.round_attach_money_24), contentDescription = "Bags")
+            BottomNavItem(iconId = R.drawable.round_attach_money_24, label = "Bags") {
+                // Navegação para Bags
             }
-            IconButton(onClick = { /* TODO: Navegar para News */ }) {
-                Icon(painter = painterResource(id = R.drawable.round_newspaper_24), contentDescription = "News")
+            BottomNavItem(iconId = R.drawable.round_newspaper_24, label = "News") {
+                // Navegação para News
             }
-            IconButton(onClick = { /* TODO: Navegar para Profile/Settings */ }) {
-                Icon(painter = painterResource(id = R.drawable.round_person_24), contentDescription = "Profile/Settings")
+            BottomNavItem(iconId = R.drawable.round_person_24, label = "Profile") {
+                // Navegação para Profile/Settings
             }
         }
     }
 }
+
+@Composable
+fun BottomNavItem(iconId: Int, label: String, onClick: () -> Unit) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        IconButton(onClick = onClick) {
+            Icon(painter = painterResource(id = iconId), contentDescription = label)
+        }
+        Text(
+            text = label,
+            style = MaterialTheme.typography.bodySmall.copy(fontSize = 10.sp)
+        )
+    }
+}
+
 
 
 // Classe Bag para representar as Bags do usuário

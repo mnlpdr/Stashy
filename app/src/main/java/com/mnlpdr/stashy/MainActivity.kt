@@ -3,6 +3,7 @@ package com.mnlpdr.stashy
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -15,12 +16,15 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.room.Room
+import com.mnlpdr.stashy.biometricauth.BiometricPromptManager
 import com.mnlpdr.stashy.data.AppDatabase
 import com.mnlpdr.stashy.ui.*
 import com.mnlpdr.stashy.ui.splash.SplashScreen
 import com.mnlpdr.stashy.viewmodel.TransactionViewModelFactory
+import com.mnlpdr.stashy.ui.navigation.AppNavigator
 
-class MainActivity : ComponentActivity() {
+class MainActivity : AppCompatActivity() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -42,7 +46,7 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             val navController = rememberNavController()
-            AppNavigator(navController, apiKey, transactionViewModel)
+            AppNavigator(navController, apiKey, transactionViewModel, activity = this)
         }
     }
 }
@@ -58,7 +62,10 @@ fun AppNavigator(
             SplashScreen(onTimeout = { navController.navigate("login") })
         }
         composable("login") {
-            LoginScreen(onLogin = { navController.navigate("home") })
+            LoginScreen(
+                onLogin = { navController.navigate("home") },
+                activity = navController.context as AppCompatActivity
+                )
         }
         composable("home") {
             HomeScreen(
@@ -70,7 +77,8 @@ fun AppNavigator(
                     Bag(name = "Bag 1", description = "Minha primeira bag"),
                     Bag(name = "Bag 2", description = "Outra bag importante"),
                     Bag(name = "Bag 3", description = "Bag de investimentos")
-                )
+                ),
+                navController
             )
         }
         composable("top10") {
