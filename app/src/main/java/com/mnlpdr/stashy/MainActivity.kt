@@ -57,13 +57,24 @@ fun AppNavigator(
         composable("splash") {
             SplashScreen(onTimeout = { navController.navigate("login") })
         }
-        composable("login") { LoginScreen(navController) }
-        composable("options") {
-            OptionsScreen(
-                onTop10CryptosClick = { navController.navigate("top10") },
-                onPortfolioClick = { /* Navegação para a tela de Portfolio, quando implementada */ }
+        composable("login") {
+            LoginScreen(onLogin = { navController.navigate("home") })
+        }
+        composable("home") {
+            HomeScreen(
+                userName = "User",
+                totalBalance = 10000.0,
+                balanceChange = 50.0,
+                balanceChangePercent = 0.5,
+                bags = listOf(
+                    Bag(name = "Bag 1", description = "Minha primeira bag"),
+                    Bag(name = "Bag 2", description = "Outra bag importante"),
+                    Bag(name = "Bag 3", description = "Bag de investimentos")
+                )
             )
         }
-        composable("top10") { CryptoPricesScreen(CryptoPricesViewModel(apiKey)) }
+        composable("top10") {
+            CryptoPricesScreen(CryptoPricesViewModel(apiKey))
+        }
     }
 }

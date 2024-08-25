@@ -1,36 +1,45 @@
 package com.mnlpdr.stashy.ui
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavHostController
 import com.mnlpdr.stashy.R
 
 @Composable
-fun LoginScreen(navController: NavHostController) {
-    Column(
+fun LoginScreen(onLogin: () -> Unit) {
+    Box(
         modifier = Modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+        contentAlignment = Alignment.Center
     ) {
-        Image(
-            painter = painterResource(id = R.drawable.stashy_vault_nobg),
-            contentDescription = "Mascote",
-            modifier = Modifier.height(200.dp)
-        )
-        Spacer(modifier = Modifier.height(32.dp))
-        Button(onClick = { navController.navigate("options") }) {
-            Text(text = "Enter the vault")
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier
+                .padding(16.dp)
+                .fillMaxWidth()
+        ) {
+            // Imagem do mascote
+            Image(
+                painter = painterResource(id = R.drawable.stashy_vault_nobg),
+                contentDescription = "Mascote",
+                modifier = Modifier.height(280.dp)
+            )
+
+            // Botão de login
+            Button(
+                onClick = onLogin,
+                modifier = Modifier
+                    .padding(16.dp)
+                    .wrapContentWidth()
+            ) {
+                Text(text = "Enter the vault")
+            }
         }
     }
 }

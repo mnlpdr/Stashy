@@ -1,15 +1,16 @@
 package com.mnlpdr.stashy.ui.navigation
 
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.mnlpdr.stashy.ui.splash.SplashScreen
 import com.mnlpdr.stashy.ui.LoginScreen
-import com.mnlpdr.stashy.ui.OptionsScreen
+import com.mnlpdr.stashy.ui.HomeScreen
 import com.mnlpdr.stashy.ui.CryptoPricesScreen
 import com.mnlpdr.stashy.ui.CryptoPricesViewModel
 import com.mnlpdr.stashy.ui.TransactionViewModel
+import com.mnlpdr.stashy.ui.Bag
 
 @Composable
 fun AppNavigator(
@@ -22,12 +23,19 @@ fun AppNavigator(
             SplashScreen(onTimeout = { navController.navigate("login") })
         }
         composable("login") {
-            LoginScreen(navController)
+            LoginScreen(onLogin = { navController.navigate("home") })
         }
-        composable("options") {
-            OptionsScreen(
-                onTop10CryptosClick = { navController.navigate("top10") },
-                onPortfolioClick = { /* Navegação para a tela de Portfolio, quando implementada */ }
+        composable("home") {
+            HomeScreen(
+                userName = "User",
+                totalBalance = 10000.0,
+                balanceChange = 50.0,
+                balanceChangePercent = 0.5,
+                bags = listOf(
+                    Bag(name = "Bag 1", description = "Minha primeira bag"),
+                    Bag(name = "Bag 2", description = "Outra bag importante"),
+                    Bag(name = "Bag 3", description = "Bag de investimentos")
+                )
             )
         }
         composable("top10") {
