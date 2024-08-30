@@ -22,6 +22,7 @@ import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import coil.ImageLoader
 import coil.compose.rememberAsyncImagePainter
 import coil.disk.DiskCache
@@ -33,7 +34,7 @@ import com.mnlpdr.stashy.R
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun CryptoPricesScreen(viewModel: CryptoPricesViewModel, imageLoader: ImageLoader) {
+fun CryptoPricesScreen(viewModel: CryptoPricesViewModel) {
     val prices by viewModel.prices.collectAsState()
     val isRefreshing by viewModel.isRefreshing.collectAsState()
     val scope = rememberCoroutineScope()
@@ -58,7 +59,7 @@ fun CryptoPricesScreen(viewModel: CryptoPricesViewModel, imageLoader: ImageLoade
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 items(prices.size) { index ->
-                    CryptoPriceItem(prices[index], imageLoader) // Passe o imageLoader aqui
+                    CryptoPriceItem(prices[index])
                 }
             }
 
@@ -71,7 +72,7 @@ fun CryptoPricesScreen(viewModel: CryptoPricesViewModel, imageLoader: ImageLoade
     }
 }
 @Composable
-fun CryptoPriceItem(price: CryptoPrice, imageLoader: ImageLoader) {
+fun CryptoPriceItem(price: CryptoPrice) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -87,29 +88,12 @@ fun CryptoPriceItem(price: CryptoPrice, imageLoader: ImageLoader) {
                 .padding(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            val context = LocalContext.current
-            val iconUrl = price.iconUrl
-
-            // Crie o ImageRequest fora do remember
-            val imageRequest = remember(iconUrl) {
-                ImageRequest.Builder(context)
-                    .data(iconUrl)
-                    .placeholder(R.drawable.crypto_placeholder)
-                    .error(R.drawable.crypto_placeholder)
-                    .build()
-            }
-
-            // Use remember apenas para o rememberAsyncImagePainter
-            val painter = rememberAsyncImagePainter(model = imageRequest, imageLoader = imageLoader)
-
             Image(
-                painter = painter,
+                painter = painterResource(id = price.iconResId),
                 contentDescription = "${price.cryptoName} icon",
                 modifier = Modifier.size(40.dp)
             )
-
             Spacer(modifier = Modifier.width(16.dp))
-
             Column {
                 Text(
                     text = price.coinTicker,
@@ -125,3 +109,4 @@ fun CryptoPriceItem(price: CryptoPrice, imageLoader: ImageLoader) {
         }
     }
 }
+

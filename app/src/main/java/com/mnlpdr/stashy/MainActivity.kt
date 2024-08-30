@@ -80,18 +80,18 @@ fun AppNavigator(
         }
         composable("top10") {
             val context = LocalContext.current
-            val imageLoader = ImageLoader.Builder(context)
-                .diskCache {
-                    DiskCache.Builder()
-                        .directory(context.cacheDir.resolve("image_cache"))
-                        .maxSizePercent(0.02) // Define 2% do espaço de armazenamento para o cache de imagens
-                        .build()
-                }
-                .build()
+//            val imageLoader = ImageLoader.Builder(context)
+//                .diskCache {
+//                    DiskCache.Builder()
+//                        .directory(context.cacheDir.resolve("image_cache"))
+//                        .maxSizePercent(0.02) // Define 2% do espaço de armazenamento para o cache de imagens
+//                        .build()
+//                }
+//                .build()
 
             // Criando o ViewModel passando apiKey, context e imageLoader
-            val viewModel = CryptoPricesViewModel(apiKey, context, imageLoader)
-            CryptoPricesScreen(viewModel, imageLoader)
+            val viewModel = CryptoPricesViewModel(apiKey)
+            CryptoPricesScreen(viewModel)
         }
     }
 }

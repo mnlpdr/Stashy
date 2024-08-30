@@ -5,6 +5,6 @@ data class CryptoPrice (
     val cryptoName: String,
     val quantity: Double,
     val currentPrice: Double,
-    val iconUrl: String? = null
+    val iconResId: Int
     )
 
