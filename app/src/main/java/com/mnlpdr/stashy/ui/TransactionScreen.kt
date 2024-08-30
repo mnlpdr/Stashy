@@ -7,7 +7,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.mnlpdr.stashy.data.Transaction
+import com.mnlpdr.stashy.model.Transaction
 import com.mnlpdr.stashy.data.TransactionType
 import java.util.*
 
@@ -75,13 +75,7 @@ fun TransactionScreen(viewModel: TransactionViewModel = viewModel()) {
                         expanded = false
                     }
                 )
-                DropdownMenuItem(
-                    text = { Text("Transfer") },
-                    onClick = {
-                        transactionType = TransactionType.TRANSFER
-                        expanded = false
-                    }
-                )
+
             }
         }
 
@@ -90,11 +84,13 @@ fun TransactionScreen(viewModel: TransactionViewModel = viewModel()) {
         Button(onClick = {
             val transaction = Transaction(
                 id = UUID.randomUUID().toString(),
+                bagId = 0,
                 cryptoName = cryptoName,  // Adicionando o campo faltante
                 coinTicker = coinTicker,
                 transactionType = transactionType,
                 quantity = amount.toDouble(),
-                pricePerUnit = pricePerUnit.toDouble()
+                priceAtTransaction = pricePerUnit.toDouble(),
+                transactionDate = Date()
             )
             viewModel.addTransaction(transaction)
         }) {

@@ -7,6 +7,7 @@ import java.util.Date
 @Entity(tableName = "transactions")
 data class TransactionEntity (
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
+    val bagId: Long,
     val cryptoName: String,
     val coinTicker: String,
     val amount: Double,
@@ -17,5 +18,5 @@ data class TransactionEntity (
     )
 
 enum class TransactionType {
-    BUY, SELL, TRANSFER
+    BUY, SELL
 }

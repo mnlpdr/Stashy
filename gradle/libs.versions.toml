@@ -36,6 +36,7 @@ uiToolingPreviewVersion = "1.5.0"
 uiVersion = "1.5.0"
 ksp = "1.9.0-1.0.11"
 coreSplashscreen = "1.0.1"
+firebaseCommonKtx = "21.0.0"
 
 [libraries]
 accompanist-swiperefresh = { module = "com.google.accompanist:accompanist-swiperefresh", version.ref = "accompanistSwiperefresh" }
@@ -84,6 +85,7 @@ ksp = { module = "com.google.devtools.ksp:symbol-processing-api", version.ref = 
 #noinspection SimilarGradleDependency
 room-compiler-ksp = { module = "androidx.room:room-compiler", version.ref = "room" }
 androidx-core-splashscreen = { group = "androidx.core", name = "core-splashscreen", version.ref = "coreSplashscreen" }
+firebase-common-ktx = { group = "com.google.firebase", name = "firebase-common-ktx", version.ref = "firebaseCommonKtx" }
 
 
 [plugins]

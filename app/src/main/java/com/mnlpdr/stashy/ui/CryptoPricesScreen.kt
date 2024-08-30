@@ -18,20 +18,22 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.collectAsState
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
-import androidx.compose.material.pullrefresh.PullRefreshState
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
+import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
+import coil.ImageLoader
 import coil.compose.rememberAsyncImagePainter
-import coil.compose.rememberImagePainter
-import coil.imageLoader
+import coil.disk.DiskCache
+import coil.request.CachePolicy
 import coil.request.ImageRequest
 import kotlinx.coroutines.launch
 import com.mnlpdr.stashy.R
 
+
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun CryptoPricesScreen(viewModel: CryptoPricesViewModel) {
+fun CryptoPricesScreen(viewModel: CryptoPricesViewModel, imageLoader: ImageLoader) {
     val prices by viewModel.prices.collectAsState()
     val isRefreshing by viewModel.isRefreshing.collectAsState()
     val scope = rememberCoroutineScope()
@@ -43,10 +45,6 @@ fun CryptoPricesScreen(viewModel: CryptoPricesViewModel) {
             }
         }
     )
-
-    // Limpar o cache manualmente
-    val context = LocalContext.current
-    context.imageLoader.memoryCache?.clear()
 
     Surface(color = MaterialTheme.colorScheme.background) {
         Box(
@@ -60,7 +58,7 @@ fun CryptoPricesScreen(viewModel: CryptoPricesViewModel) {
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 items(prices.size) { index ->
-                    CryptoPriceItem(prices[index])
+                    CryptoPriceItem(prices[index], imageLoader) // Passe o imageLoader aqui
                 }
             }
 
@@ -72,9 +70,8 @@ fun CryptoPricesScreen(viewModel: CryptoPricesViewModel) {
         }
     }
 }
-
 @Composable
-fun CryptoPriceItem(price: CryptoPrice) {
+fun CryptoPriceItem(price: CryptoPrice, imageLoader: ImageLoader) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -88,20 +85,31 @@ fun CryptoPriceItem(price: CryptoPrice) {
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically // Isso garante que o ícone e o texto fiquem alinhados verticalmente
+            verticalAlignment = Alignment.CenterVertically
         ) {
+            val context = LocalContext.current
             val iconUrl = price.iconUrl
+
+            // Crie o ImageRequest fora do remember
+            val imageRequest = remember(iconUrl) {
+                ImageRequest.Builder(context)
+                    .data(iconUrl)
+                    .placeholder(R.drawable.crypto_placeholder)
+                    .error(R.drawable.crypto_placeholder)
+                    .build()
+            }
+
+            // Use remember apenas para o rememberAsyncImagePainter
+            val painter = rememberAsyncImagePainter(model = imageRequest, imageLoader = imageLoader)
+
             Image(
-                painter = rememberAsyncImagePainter(
-                    ImageRequest.Builder(LocalContext.current).data(data = iconUrl)
-                        .apply<ImageRequest.Builder>(block = fun ImageRequest.Builder.() {
-                            error(R.drawable.crypto_placeholder) // Ícone de placeholder em caso de erro
-                        }).build()
-                ),
+                painter = painter,
                 contentDescription = "${price.cryptoName} icon",
                 modifier = Modifier.size(40.dp)
             )
-            Spacer(modifier = Modifier.width(16.dp)) // Espaçamento entre o ícone e o texto
+
+            Spacer(modifier = Modifier.width(16.dp))
+
             Column {
                 Text(
                     text = price.coinTicker,
@@ -117,4 +125,3 @@ fun CryptoPriceItem(price: CryptoPrice) {
         }
     }
 }
-

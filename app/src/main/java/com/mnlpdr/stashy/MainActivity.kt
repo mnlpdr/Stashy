@@ -1,27 +1,24 @@
 package com.mnlpdr.stashy
 
 import android.os.Bundle
-import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.core.splashscreen.SplashScreen
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.room.Room
-import com.mnlpdr.stashy.biometricauth.BiometricPromptManager
+import coil.ImageLoader
+import coil.disk.DiskCache
 import com.mnlpdr.stashy.data.AppDatabase
 import com.mnlpdr.stashy.ui.*
 import com.mnlpdr.stashy.ui.splash.SplashScreen
 import com.mnlpdr.stashy.viewmodel.TransactionViewModelFactory
 import com.mnlpdr.stashy.ui.navigation.AppNavigator
+import com.mnlpdr.stashy.ui.CryptoPricesViewModel
 
 class MainActivity : AppCompatActivity() {
 
@@ -82,7 +79,19 @@ fun AppNavigator(
             )
         }
         composable("top10") {
-            CryptoPricesScreen(CryptoPricesViewModel(apiKey))
+            val context = LocalContext.current
+            val imageLoader = ImageLoader.Builder(context)
+                .diskCache {
+                    DiskCache.Builder()
+                        .directory(context.cacheDir.resolve("image_cache"))
+                        .maxSizePercent(0.02) // Define 2% do espaço de armazenamento para o cache de imagens
+                        .build()
+                }
+                .build()
+
+            // Criando o ViewModel passando apiKey, context e imageLoader
+            val viewModel = CryptoPricesViewModel(apiKey, context, imageLoader)
+            CryptoPricesScreen(viewModel, imageLoader)
         }
     }
 }

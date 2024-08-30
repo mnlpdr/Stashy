@@ -2,6 +2,9 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
     id("kotlin-kapt")
+    id("com.google.gms.google-services")
+
+
 
 }
 
@@ -10,7 +13,7 @@ android {
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.mnlpdr.stashy"
+        applicationId = "com.mnlpdr.stashy.dev"
         minSdk = 24
         targetSdk = 34
         versionCode = 1
@@ -71,6 +74,7 @@ dependencies {
     implementation(libs.retrofit)
     implementation(libs.converter.gson)
     implementation(libs.androidx.core.splashscreen)
+    implementation(libs.firebase.common.ktx)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -98,9 +102,8 @@ dependencies {
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.4")
     implementation("io.coil-kt:coil-compose:2.0.0")
     implementation("androidx.biometric:biometric:1.2.0-alpha04")
-
-
-
+    implementation("com.google.firebase:firebase-firestore-ktx:24.0.0")
+    implementation(platform("com.google.firebase:firebase-bom:33.2.0"))
 }
 
 kotlin {

@@ -158,8 +158,8 @@ fun BottomNavigationBar(navController: NavHostController) {
             BottomNavItem(iconId = R.drawable.round_attach_money_24, label = "Bags") {
                 // Navegação para Bags
             }
-            BottomNavItem(iconId = R.drawable.round_newspaper_24, label = "News") {
-                // Navegação para News
+            BottomNavItem(iconId = R.drawable.baseline_library_books_24, label = "Futures Logbook") {
+                navController.navigate("futures_logbook")
             }
             BottomNavItem(iconId = R.drawable.round_person_24, label = "Profile") {
                 // Navegação para Profile/Settings
