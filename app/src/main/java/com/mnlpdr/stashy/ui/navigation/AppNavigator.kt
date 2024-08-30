@@ -61,8 +61,8 @@ fun AppNavigator(
                 .build()
 
             // Criando o ViewModel passando apiKey, context e imageLoader
-            val viewModel = CryptoPricesViewModel(apiKey, context, imageLoader)
-            CryptoPricesScreen(viewModel, imageLoader)
+            val viewModel = CryptoPricesViewModel(apiKey)
+            CryptoPricesScreen(viewModel)
         }
         composable("futures_logbook") {
             FuturesLogbookScreen(viewModel = FuturesLogbookViewModel())
