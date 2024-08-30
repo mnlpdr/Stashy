@@ -2,10 +2,12 @@ package com.mnlpdr.stashy.ui.navigation
 
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavHostController
-import androidx.navigation.activity
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import coil.ImageLoader
+import coil.disk.DiskCache
 import com.mnlpdr.stashy.ui.splash.SplashScreen
 import com.mnlpdr.stashy.ui.LoginScreen
 import com.mnlpdr.stashy.ui.HomeScreen
@@ -13,6 +15,8 @@ import com.mnlpdr.stashy.ui.CryptoPricesScreen
 import com.mnlpdr.stashy.ui.CryptoPricesViewModel
 import com.mnlpdr.stashy.ui.TransactionViewModel
 import com.mnlpdr.stashy.ui.Bag
+import com.mnlpdr.stashy.ui.FuturesLogbookScreen
+import com.mnlpdr.stashy.viewmodel.FuturesLogbookViewModel
 
 @Composable
 fun AppNavigator(
@@ -26,7 +30,8 @@ fun AppNavigator(
             SplashScreen(onTimeout = { navController.navigate("login") })
         }
         composable("login") {
-            LoginScreen(onLogin = { navController.navigate("home") },
+            LoginScreen(
+                onLogin = { navController.navigate("home") },
                 activity = activity
             )
         }
@@ -45,7 +50,22 @@ fun AppNavigator(
             )
         }
         composable("top10") {
-            CryptoPricesScreen(CryptoPricesViewModel(apiKey))
+            val context = LocalContext.current
+            val imageLoader = ImageLoader.Builder(context)
+                .diskCache {
+                    DiskCache.Builder()
+                        .directory(context.cacheDir.resolve("image_cache"))
+                        .maxSizePercent(0.02) // Define 2% do espaço de armazenamento para o cache de imagens
+                        .build()
+                }
+                .build()
+
+            // Criando o ViewModel passando apiKey, context e imageLoader
+            val viewModel = CryptoPricesViewModel(apiKey, context, imageLoader)
+            CryptoPricesScreen(viewModel, imageLoader)
+        }
+        composable("futures_logbook") {
+            FuturesLogbookScreen(viewModel = FuturesLogbookViewModel())
         }
     }
 }

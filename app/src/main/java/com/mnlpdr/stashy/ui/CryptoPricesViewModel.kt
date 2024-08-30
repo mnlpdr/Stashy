@@ -1,15 +1,19 @@
 package com.mnlpdr.stashy.ui
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mnlpdr.stashy.data.CoinCapApiService
 import com.mnlpdr.stashy.data.CoinGeckoApiService
 import com.mnlpdr.stashy.data.CryptoPrice
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import coil.ImageLoader
+import coil.request.ImageRequest
 
-class CryptoPricesViewModel(apiKey: String) : ViewModel() {
+class CryptoPricesViewModel(apiKey: String, private val context: Context, private val imageLoader : ImageLoader) : ViewModel() {
 
     // Lista de moedas que o usuário possui
     private val _userHoldings = mutableListOf<CryptoPrice>()
@@ -58,34 +62,42 @@ class CryptoPricesViewModel(apiKey: String) : ViewModel() {
             try {
                 val response = apiService.getCryptoPrices()
                 val cryptoPrices = response.data.map { data ->
-                    // Cria o objeto CryptoPrice sem o ícone inicialmente
                     CryptoPrice(
                         coinTicker = data.symbol.uppercase(),
                         cryptoName = data.name,
                         quantity = 0.0,
                         currentPrice = data.priceUsd.toDouble(),
-                        iconUrl = null  // O ícone será preenchido posteriormente
+                        iconUrl = null
                     )
                 }
 
-                // Agora buscamos os ícones de cada cripto
                 val updatedCryptoPrices = cryptoPrices.map { crypto ->
                     try {
                         val geckoResponse = geckoApiService.getCoinDetails(crypto.cryptoName.lowercase())
-                        crypto.copy(iconUrl = geckoResponse.image.large)  // Atualiza com o ícone
+                        val imageUrl = geckoResponse.image.large
+
+                        // Pré-carregar a imagem
+                        imageLoader.enqueue(
+                            ImageRequest.Builder(context)
+                                .data(imageUrl)
+                                .build()
+                        )
+
+                        crypto.copy(iconUrl = imageUrl)
                     } catch (e: Exception) {
-                        crypto // Se falhar, retorna o objeto sem o ícone
+                        crypto
                     }
                 }
 
                 _prices.value = updatedCryptoPrices
             } catch (e: Exception) {
-                // Aqui você pode lidar com o erro, como exibir uma mensagem de erro
+                // Lidar com o erro
             } finally {
                 _isRefreshing.value = false
             }
         }
     }
+
 
     fun refreshPrices() {
         fetchCryptoPricesFromAPI()

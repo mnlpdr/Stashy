@@ -2,7 +2,7 @@ package com.mnlpdr.stashy.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.mnlpdr.stashy.data.Transaction
+import com.mnlpdr.stashy.model.Transaction
 import com.mnlpdr.stashy.data.TransactionDAO
 import com.mnlpdr.stashy.data.TransactionEntity
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -20,14 +20,14 @@ class TransactionViewModel(private val transactionDAO: TransactionDAO) : ViewMod
         saveTransaction(transaction.toEntity())  // Salva no banco de dados
     }
 
-    // Converte Transaction para TransactionEntity
     private fun Transaction.toEntity(): TransactionEntity {
         return TransactionEntity(
             cryptoName = this.cryptoName,
+            bagId = this.bagId,
             coinTicker = this.coinTicker,
             amount = this.quantity,
-            pricePerUnit = this.pricePerUnit,
-            date = java.util.Date(this.timestamp),
+            pricePerUnit = this.priceAtTransaction,
+            date = java.util.Date(this.transactionDate.time),
             transactionType = this.transactionType
         )
     }
@@ -36,14 +36,16 @@ class TransactionViewModel(private val transactionDAO: TransactionDAO) : ViewMod
     private fun TransactionEntity.toTransaction(): Transaction {
         return Transaction(
             id = this.id.toString(),
+            bagId = this.bagId, // Passando o bagId
             cryptoName = this.cryptoName,
             coinTicker = this.coinTicker,
             quantity = this.amount,
-            pricePerUnit = this.pricePerUnit,
-            timestamp = this.date.time,
+            priceAtTransaction = this.pricePerUnit, // Corrigido para priceAtTransaction
+            transactionDate = this.date, // Passando a data da transação
             transactionType = this.transactionType
         )
     }
+
 
     // Carrega transações para um determinado coinTicker
     fun loadTransactionsForCoin(coinTicker: String) {
